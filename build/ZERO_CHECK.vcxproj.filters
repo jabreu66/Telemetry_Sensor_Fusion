@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jfire\Desktop\Telemetry Sensor Fusion Project (C++)\build\CMakeFiles\de58face49c97e0b699b4f3d527da221\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{04122E87-2A89-3996-8850-D8EE8FD9D572}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
