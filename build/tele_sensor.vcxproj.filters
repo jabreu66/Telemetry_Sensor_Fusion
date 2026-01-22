@@ -4,6 +4,12 @@
     <ClCompile Include="C:\Users\jfire\Desktop\Telemetry Sensor Fusion Project (C++)\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\jfire\Desktop\Telemetry Sensor Fusion Project (C++)\src\csv_writer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\jfire\Desktop\Telemetry Sensor Fusion Project (C++)\src\state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\jfire\Desktop\Telemetry Sensor Fusion Project (C++)\CMakeLists.txt" />
