@@ -1,0 +1,3 @@
+C:/Users/jfire/Desktop/Telemetry Sensor Fusion Project (C++)/build/CMakeFiles/tele_sensor.dir
+C:/Users/jfire/Desktop/Telemetry Sensor Fusion Project (C++)/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/jfire/Desktop/Telemetry Sensor Fusion Project (C++)/build/CMakeFiles/ZERO_CHECK.dir
