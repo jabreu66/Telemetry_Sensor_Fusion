@@ -1,11 +1,12 @@
 #include <iostream>
 #include "sensors.hpp"
+#include <random>
 
 std::mt19937 rand_gen(22);
 std::normal_distribution<double> gpsNoise{0, 1.2};
 std::normal_distribution<double> velNoise{0, 0.5};
 
-GPS::GPS(){}
+
 
 GPS::GPS(double time, double x, double y, double z) : time(time), x(x), y(y), z(z) {}
 
@@ -32,7 +33,7 @@ VelocityMeasurement::VelocityMeasurement(double time, double vx, double vy, doub
 
 VelocityMeasurement::VelocityMeasurement(const State &state) : time(state.t_s), vx(state.vx_mps), vy(state.vy_mps), vz(state.vz_mps) {}
     
-VelocityMeasurement::VelocityMeasurement(){}
+// VelocityMeasurement::VelocityMeasurement(){}
 
 
 VelocityMeasurement velocitySimulator(const State &truthState)
