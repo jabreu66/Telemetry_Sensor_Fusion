@@ -2,18 +2,22 @@
 #include "csv_writer.h"
 #include "state.h"
 #include "sensors.hpp"
-
+#include "est_state.h"
 using namespace std;
 
 Writer w("logs.csv");
 Writer gw("gps.csv");
 Writer gv("vel.csv");
+Writer est("estimate.csv");
 
 int main()
 {
     float dt = 0.1; // delta time
     // cout << "Hello World " << endl;
     State state(0, 0, 0, 0, 50, 0, 0);
+    estimated_state est_state(0, 50);
+    est_state.prediction(0,50, 0);
+    
     for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
     {
         state.t_s = i;
