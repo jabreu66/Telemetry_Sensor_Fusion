@@ -4,9 +4,15 @@
 class estimated_state{
 
     public:
-        float vx;
-        float x;
+        // double time;
+        double vx;
+        double x;
 
+        estimated_state();
+        estimated_state(double vel, double pos);
+
+        estimated_state prediction(double x_hat, double vx_hat, double dt);
+        estimated_state correction(double x_pred, double vx_pred, double x_gps, double vx_meas, double tru_weight);
 };
 
 #endif
