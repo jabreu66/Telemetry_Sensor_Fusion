@@ -16,18 +16,25 @@ int main()
     // cout << "Hello World " << endl;
     State state(0, 0, 0, 0, 50, 0, 0);
     estimated_state est_state(0, 50);
-    est_state.prediction(0,50, 0);
     
     for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
     {
         state.t_s = i;
         // std::cout << "i is " << i << " state.t_s is " << state.t_s << std::endl;
         state.x_m += state.vx_mps * dt;
+
+        estimated_state new_est_state = est_state.prediction(est_state.x, est_state.vx, dt);
+
         GPS gpsObject = gpsSimulator(state);
         VelocityMeasurement velObject = velocitySimulator(state);
+
+        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, gpsObject.x, velObject.vx, 0.7);
+        est_state = corrected_est_state;
+
         w.writeRow(state);   
         gw.writeRowGPS(gpsObject);
         gv.writeRowVel(velObject);
+        est.writeRowEst(corrected_est_state);
     }
     return 0;
 }

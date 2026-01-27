@@ -9,7 +9,7 @@ class estimated_state{
         double x;
 
         estimated_state();
-        estimated_state::estimated_state(double pos, double vel);
+        estimated_state(double pos, double vel);
 
         estimated_state prediction(double x_hat, double vx_hat, double dt);
         estimated_state correction(double x_pred, double vx_pred, double x_gps, double vx_meas, double tru_weight);

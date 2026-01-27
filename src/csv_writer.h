@@ -8,6 +8,7 @@
 #include <sstream>
 #include "state.h"
 #include "sensors.hpp"
+#include "est_state.h"
 
 
 class Writer{
@@ -20,6 +21,8 @@ class Writer{
         void writeRowVel(VelocityMeasurement state);
         std::ofstream outputFile;
         // std::ifstream file;
+        void writeRowEst(estimated_state state);
+
     
 
 };
