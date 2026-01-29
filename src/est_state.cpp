@@ -8,12 +8,14 @@ estimated_state::estimated_state() : x(0), vx(0), pos_variance(0), vel_variance(
 
 }
 
-estimated_state estimated_state::prediction(double x_hat, double vx_hat, double dt)
+estimated_state estimated_state::prediction(double x_hat, double vx_hat, double Q_x, double Q_v, double dt)
 {
     // estimated_state est;
     double x = x_hat + (vx_hat * dt);
     double vx = vx_hat;
-    estimated_state est(x, vx);
+    double pos_variance_pred = pos_variance + Q_x;
+    double vel_variance_pred = vel_variance + Q_v;
+    estimated_state est(x, vx, Q_x, Q_v);
     return est;
     
 }
