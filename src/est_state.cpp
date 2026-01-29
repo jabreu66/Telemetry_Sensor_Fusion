@@ -1,9 +1,9 @@
 #include <iostream>
 #include "est_state.h"
 
-estimated_state::estimated_state(double pos, double vel) : x(pos), vx(vel) {}
+estimated_state::estimated_state(double pos, double vel, double p_var, double v_var) : x(pos), vx(vel), pos_variance(p_var), vel_variance(v_var) {}
 
-estimated_state::estimated_state() : x(0), vx(0)
+estimated_state::estimated_state() : x(0), vx(0), pos_variance(0), vel_variance(0)
 {
 
 }

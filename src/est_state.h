@@ -7,9 +7,10 @@ class estimated_state{
         // double time;
         double vx;
         double x;
+        double pos_variance, vel_variance;
 
         estimated_state();
-        estimated_state(double pos, double vel);
+        estimated_state(double pos, double vel, double p_var, double v_var);
 
         estimated_state prediction(double x_hat, double vx_hat, double dt);
         estimated_state correction(double x_pred, double vx_pred, double x_gps, double vx_meas, double tru_weight);
