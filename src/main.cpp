@@ -29,7 +29,7 @@ int main()
         // std::cout << "i is " << i << " state.t_s is " << state.t_s << std::endl;
         state.x_m += state.vx_mps * dt;
 
-        estimated_state new_est_state = est_state.prediction(est_state.x, est_state.vx, dt);
+        estimated_state new_est_state = est_state.prediction(Q_x, Q_v, dt);
 
         GPS gpsObject = gpsSimulator(state);
         VelocityMeasurement velObject = velocitySimulator(state);
