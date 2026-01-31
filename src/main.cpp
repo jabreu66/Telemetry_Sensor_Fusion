@@ -20,7 +20,7 @@ int main()
 {
     float dt = 0.1; // delta time
     // cout << "Hello World " << endl;
-    State state(0, 0, 0, 0, 50, 0, 0);
+    State state(0, 0, 0, 0, 50, 0, 0, 0, 0, 0);
     estimated_state est_state(0, 50, 0, 0);
     
     for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
