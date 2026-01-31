@@ -34,7 +34,7 @@ int main()
         GPS gpsObject = gpsSimulator(state);
         VelocityMeasurement velObject = velocitySimulator(state);
 
-        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, gpsObject.x, velObject.vx, 0.7);
+        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, gpsObject.x, velObject.vx, R_gps, R_vel);
         est_state = corrected_est_state;
 
         w.writeRow(state);   
