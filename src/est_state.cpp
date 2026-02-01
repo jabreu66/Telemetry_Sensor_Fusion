@@ -36,6 +36,7 @@ estimated_state estimated_state::correction(double x_pred, double vx_pred, doubl
 
     double P_x_new = (1 - Kx) * this->pos_variance;
     double P_v_new = (1 - Kv) * this->vel_variance;
+    double P_A_new = 0;
    
-    return estimated_state(x_new, v_new, P_x_new, P_v_new);
+    return estimated_state(x_new, v_new, P_x_new, P_v_new, P_A_new);
 }
