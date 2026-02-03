@@ -1,7 +1,20 @@
 #include <iostream>
 #include "est_state.h"
 
-estimated_state::estimated_state(double pos, double vel, double p_var, double v_var, double a_var) : x(pos), vx(vel), pos_variance(p_var), vel_variance(v_var), acc_variance(a_var) {}
+estimated_state::estimated_state(double pos, double vel, double acc, double p_var, double v_var, double a_var) : x(pos), vx(vel), ax(acc) 
+{
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            cov_matrix[i][j] = 0;
+        }
+    }
+
+    cov_matrix[0][0] = p_var;
+    cov_matrix[1][1] = v_var;
+    cov_matrix[2][2] = a_var;
+}
 
 estimated_state::estimated_state() : x(0), vx(0), pos_variance(0), vel_variance(0)
 {
