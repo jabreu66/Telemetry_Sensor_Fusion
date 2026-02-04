@@ -16,7 +16,7 @@ estimated_state::estimated_state(double pos, double vel, double acc, double p_va
     cov_matrix[2][2] = a_var;
 }
 
-estimated_state::estimated_state() : x(0), vx(0), pos_variance(0), vel_variance(0)
+estimated_state::estimated_state() : x(0), vx(0), ax(0)
 {
 
 }
@@ -24,13 +24,12 @@ estimated_state::estimated_state() : x(0), vx(0), pos_variance(0), vel_variance(
 estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, double dt)
 {
     // estimated_state est;
-    double x = this->x + (this->vx * dt);
-    double vx = this->vx;
+    double x = this->x + vx*dt + (0.5*ax)*(dt * dt);
+    double vx = this->vx + this->ax*dt;
     double ax = this->ax;
     double pos_variance_pred = this->pos_variance + Q_x;
     double vel_variance_pred = this->vel_variance + Q_v;
     double acc_variance_pred = this->acc_variance + Q_a;
-    estimated_state est(x, vx, pos_variance_pred, vel_variance_pred, acc_variance_pred);
     return est;
     
 }
