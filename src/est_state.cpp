@@ -27,10 +27,41 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
     double x = this->x + vx*dt + (0.5*ax)*(dt * dt);
     double vx = this->vx + this->ax*dt;
     double ax = this->ax;
-    double pos_variance_pred = this->pos_variance + Q_x;
-    double vel_variance_pred = this->vel_variance + Q_v;
-    double acc_variance_pred = this->acc_variance + Q_a;
-    return est;
+    double F[3][3] = {{1, dt, 0.5*dt*dt}, {0, 1, dt}, {0, 0, 1}};
+
+    double Q[3][3];
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            Q[i][j] = 0;
+        }
+    }
+
+    Q[0][0] = Q_x;
+    Q[1][1] = Q_v;
+    Q[2][2] = Q_a;
+
+    double FP[3][3];
+
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            FP[i][j] = this->cov_matrix[i][j] * F[i][j];
+        }
+    }
+
+    double FT[3][3];
+
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+          FT[i][j] = F[j][i];
+        }
+    }
+    // return est;
     
 }
 
