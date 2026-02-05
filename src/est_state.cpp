@@ -24,12 +24,12 @@ estimated_state::estimated_state() : x(0), vx(0), ax(0)
 estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, double dt)
 {
     // estimated_state est;
-    double x = this->x + vx*dt + (0.5*ax)*(dt * dt);
-    double vx = this->vx + this->ax*dt;
-    double ax = this->ax;
+    double x_pred = this->x + this->vx*dt + (0.5*this->ax)*(dt * dt);
+    double vx_pred = this->vx + this->ax*dt;
+    double ax_pred = this->ax;
     double F[3][3] = {{1, dt, 0.5*dt*dt}, {0, 1, dt}, {0, 0, 1}};
 
-    double Q[3][3];
+    double Q[3][3] = {};
     for(int i = 0; i < 3; i++)
     {
         for(int j = 0; j < 3; j++)
@@ -42,7 +42,7 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
     Q[1][1] = Q_v;
     Q[2][2] = Q_a;
 
-    double FP[3][3];
+    double FP[3][3] = {};
 
     for(int i = 0; i < 3; i++)
     {
@@ -50,7 +50,7 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
         {
             for(int k = 0; k < 3; k++)
             {                
-                FP[i][j] +=  F[k][j] * this->cov_matrix[i][k];
+                FP[i][j] +=  F[i][k] * this->cov_matrix[k][j];
             }    
         }
     }
@@ -87,13 +87,13 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
    }
 
     
-    estimated_state est_state(x, vx, ax, p_pred[0][0], p_pred[1][1], p_pred[2][2]);
+    estimated_state est_state(x_pred, vx_pred, ax_pred, p_pred[0][0], p_pred[1][1], p_pred[2][2]);
 
     for(int i = 0; i < 3; i++)
     {
         for(int j = 0; j < 3; j++)
         {
-            this->cov_matrix[i][j] = p_pred[i][j];
+           est_state.cov_matrix[i][j] = p_pred[i][j];
         }
     }
 
