@@ -101,7 +101,7 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
     
 }
 
-estimated_state estimated_state::correction(double x_pred, double vx_pred, double x_gps, double vx_meas, double R_gps, double R_vel)
+estimated_state estimated_state::correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel)
 {
    this->cov_matrix;
 
@@ -113,6 +113,10 @@ estimated_state estimated_state::correction(double x_pred, double vx_pred, doubl
    double Kx = this->cov_matrix[0][0] / total_uncertainty;
    double Kv = this->cov_matrix[1][0] / total_uncertainty;
    double Ka = this->cov_matrix[2][0] / total_uncertainty;
+
+   x_pred = x_pred + Kx * gps_innovation;
+   vx_pred = vx_pred + Kv * gps_innovation;
+   ax_pred = ax_pred + Ka * gps_innovation;
 
    
     // return estimated_state(x_new, v_new, P_x_new, P_v_new, P_A_new);
