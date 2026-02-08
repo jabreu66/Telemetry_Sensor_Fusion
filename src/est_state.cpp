@@ -103,7 +103,7 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
 
 estimated_state estimated_state::correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel)
 {
-   this->cov_matrix;
+//    this->cov_matrix;
 
    double gps_innovation = x_gps - x_pred;
    double vel_innovation = vx_meas - vx_pred;
@@ -118,6 +118,37 @@ estimated_state estimated_state::correction(double x_pred, double vx_pred, doubl
    vx_pred = vx_pred + Kv * gps_innovation;
    ax_pred = ax_pred + Ka * gps_innovation;
 
+   double row0[3] = {this->cov_matrix[0][0], this->cov_matrix[0][1], this->cov_matrix[0][2]};
+   double K[3] = {Kx, Kv, Ka};
+
+   for(int i = 0; i < 3; i++)
+   {
+        for(int j = 0; j < 3; j++)
+        {
+            this->cov_matrix[i][j] -= K[i] * row0[j]; 
+        }
+   }
+
+   double total_uncertainty = this->cov_matrix[1][1] + R_vel;
+   
+    Kx = this->cov_matrix[0][1] / total_uncertainty;
+    Kv = this->cov_matrix[1][1] / total_uncertainty;
+    Ka = this->cov_matrix[2][1] / total_uncertainty;
+
+   x_pred = x_pred + Kx * gps_innovation;
+   vx_pred = vx_pred + Kv * gps_innovation;
+   ax_pred = ax_pred + Ka * gps_innovation;
+
+   double row1[3] = {this->cov_matrix[1][0], this->cov_matrix[1][1], this->cov_matrix[1][2]};
+   double vK[3] = {Kx, Kv, Ka};
+
+   for(int i = 0; i < 3; i++)
+   {
+        for(int j = 0; j < 3; j++)
+        {
+            this->cov_matrix[i][j] -= vK[i] * row1[j]; 
+        }
+   }
    
     // return estimated_state(x_new, v_new, P_x_new, P_v_new, P_A_new);
 }
