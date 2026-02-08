@@ -15,6 +15,7 @@ double R_vel = 1;
 
 double Q_x = 0.1;
 double Q_v = 0.5;
+double Q_a = 0.9;
 
 int main()
 {
@@ -29,12 +30,12 @@ int main()
         // std::cout << "i is " << i << " state.t_s is " << state.t_s << std::endl;
         state.x_m += state.vx_mps * dt;
 
-        estimated_state new_est_state = est_state.prediction(Q_x, Q_v, dt);
+        estimated_state new_est_state = est_state.prediction(Q_x, Q_v, Q_a, dt);
 
         GPS gpsObject = gpsSimulator(state);
         VelocityMeasurement velObject = velocitySimulator(state);
 
-        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, gpsObject.x, velObject.vx, R_gps, R_vel);
+        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, new_est_state.ax, gpsObject.x, velObject.vx, R_gps, R_vel);
         est_state = corrected_est_state;
 
         w.writeRow(state);   
