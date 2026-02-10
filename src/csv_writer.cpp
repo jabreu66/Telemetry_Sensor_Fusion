@@ -57,7 +57,7 @@ void Writer::writeRowEst(estimated_state state)
 {
     if(outputFile.is_open())
     {
-        outputFile  << state.x  << ", " << state.vx;
+        outputFile  << state.x  << ", " << state.vx << ", " << state.ax;
         outputFile << "\n";
     }
 }
