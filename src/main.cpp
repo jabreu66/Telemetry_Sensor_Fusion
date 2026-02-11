@@ -27,9 +27,11 @@ int main()
     // cout << "Hello World " << endl;
     State state(0, 0, 0, 0, 50, 0, 0, 2, 0, 0);
     estimated_state est_state(0, 50, 2, 4, 1, 4);
-    
+    int step = 0;
+    bool vel_update = false, gps_update = false;
     for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
     {
+        
         state.t_s = i;
         if (i < 2) state.a_x = 2.0;
         else if (i >= 2 && i < 6.0 ) state.a_x = 0.0;
@@ -43,8 +45,19 @@ int main()
 
         estimated_state new_est_state = est_state.prediction(Q_x, Q_v, Q_a, dt);
 
-        GPS gpsObject = gpsSimulator(state);
-        VelocityMeasurement velObject = velocitySimulator(state);
+        gps_update = (step % 10 == 0);
+         GPS gpsObject;
+        if(gps_update){
+            GPS gpsObject = gpsSimulator(state);
+        }
+
+        VelocityMeasurement velObject;
+        vel_update = (step % 2 == 0);
+        if(vel_update){
+            velObject = velocitySimulator(state);
+        }
+
+        step++;
 
         estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, new_est_state.ax, gpsObject.x, velObject.vx, R_gps, R_vel);
         est_state = corrected_est_state;
