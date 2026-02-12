@@ -21,6 +21,12 @@ double Q_a = 0.9;
 std::mt19937 rand_gen(22);
 std::normal_distribution<double> accelNoise{0, .1};
 
+std::random_device rand;
+std::mt19937 gen(rd);
+std::uniform_int_distribution<> distrib(1, 100);
+
+
+
 int main()
 {
     float dt = 0.1; // delta time
@@ -46,25 +52,31 @@ int main()
         estimated_state new_est_state = est_state.prediction(Q_x, Q_v, Q_a, dt);
 
         gps_update = (step % 10 == 0);
-         GPS gpsObject;
+        int gps_dropoff = distrib(gen);
+        if(gps_dropoff >= 1 && gps_dropoff <= 5)
+        {
+            gps_update = false;
+        }
+        GPS gpsObject;
         if(gps_update){
-            GPS gpsObject = gpsSimulator(state);
+            gpsObject = gpsSimulator(state);
+            gw.writeRowGPS(gpsObject);
+
         }
 
         VelocityMeasurement velObject;
         vel_update = (step % 2 == 0);
         if(vel_update){
             velObject = velocitySimulator(state);
+            gv.writeRowVel(velObject);
         }
 
         step++;
 
-        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, new_est_state.ax, gpsObject.x, velObject.vx, R_gps, R_vel);
+        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, new_est_state.ax, gpsObject.x, velObject.vx, R_gps, R_vel, gps_update, vel_update);
         est_state = corrected_est_state;
 
         w.writeRow(state);   
-        gw.writeRowGPS(gpsObject);
-        gv.writeRowVel(velObject);
         est.writeRowEst(corrected_est_state);
     }
     return 0;

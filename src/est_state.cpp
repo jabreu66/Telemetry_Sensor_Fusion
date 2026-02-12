@@ -101,17 +101,21 @@ estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, 
     
 }
 
-estimated_state estimated_state::correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel)
+estimated_state estimated_state::correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel, bool has_gps, bool has_vel)
 {
+    double total_uncertainty = 0;
+    double Kx = 0;
+    double Kv = 0;
+    double Ka = 0;
 //    this->cov_matrix;
-
+if(has_gps){
    double gps_innovation = x_gps - x_pred;
 
-   double total_uncertainty = this->cov_matrix[0][0] + R_gps;
+   total_uncertainty = this->cov_matrix[0][0] + R_gps;
    
-   double Kx = this->cov_matrix[0][0] / total_uncertainty;
-   double Kv = this->cov_matrix[1][0] / total_uncertainty;
-   double Ka = this->cov_matrix[2][0] / total_uncertainty;
+   Kx = this->cov_matrix[0][0] / total_uncertainty;
+   Kv = this->cov_matrix[1][0] / total_uncertainty; 
+   Ka = this->cov_matrix[2][0] / total_uncertainty;
 
    x_pred = x_pred + Kx * gps_innovation;
    vx_pred = vx_pred + Kv * gps_innovation;
@@ -127,9 +131,9 @@ estimated_state estimated_state::correction(double x_pred, double vx_pred, doubl
             this->cov_matrix[i][j] -= K[i] * row0[j]; 
         }
    }
-
+}
    // vel sec
-
+if(has_vel){
     double vel_innovation = vx_meas - vx_pred;
     total_uncertainty = this->cov_matrix[1][1] + R_vel;
    
@@ -151,6 +155,7 @@ estimated_state estimated_state::correction(double x_pred, double vx_pred, doubl
             this->cov_matrix[i][j] -= vK[i] * row1[j]; 
         }
    }
+}
 
    estimated_state corrected(x_pred, vx_pred, ax_pred, this->cov_matrix[0][0], this->cov_matrix[1][1], this->cov_matrix[2][2]);
 
