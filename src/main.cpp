@@ -60,8 +60,11 @@ int main()
             {
                 gps_update = false;
             }
-            gpsObject = gpsSimulator(state);
-            gw.writeRowGPS(gpsObject);
+            if(gps_update)
+            { 
+                gpsObject = gpsSimulator(state);
+                gw.writeRowGPS(gpsObject);
+            }
 
         }
 
@@ -73,8 +76,11 @@ int main()
             {
                 vel_update = false;
             }
-            velObject = velocitySimulator(state);
-            gv.writeRowVel(velObject);
+            if(vel_update)
+            {
+                velObject = velocitySimulator(state);
+                gv.writeRowVel(velObject);
+            }
         }
 
         step++;
