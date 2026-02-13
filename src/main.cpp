@@ -21,8 +21,8 @@ double Q_a = 0.9;
 std::mt19937 rand_gen(22);
 std::normal_distribution<double> accelNoise{0, .1};
 
-std::random_device rand;
-std::mt19937 gen(rd);
+std::random_device rd;
+std::mt19937 gen(rd());
 std::uniform_int_distribution<> distrib(1, 100);
 
 
@@ -53,20 +53,26 @@ int main()
 
         gps_update = (step % 10 == 0);
         int gps_dropoff = distrib(gen);
-        if(gps_dropoff >= 1 && gps_dropoff <= 5)
-        {
-            gps_update = false;
-        }
-        GPS gpsObject;
+      
+        GPS gpsObject(0,0,0,0);
         if(gps_update){
+            if(gps_dropoff >= 1 && gps_dropoff <= 5)
+            {
+                gps_update = false;
+            }
             gpsObject = gpsSimulator(state);
             gw.writeRowGPS(gpsObject);
 
         }
 
-        VelocityMeasurement velObject;
+        int vel_dropoff = distrib(gen);
+        VelocityMeasurement velObject(0,0,0,0);
         vel_update = (step % 2 == 0);
         if(vel_update){
+            if(vel_dropoff >= 1 && vel_dropoff <= 5)
+            {
+                vel_update = false;
+            }
             velObject = velocitySimulator(state);
             gv.writeRowVel(velObject);
         }
