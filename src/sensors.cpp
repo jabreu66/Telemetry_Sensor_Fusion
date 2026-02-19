@@ -2,7 +2,7 @@
 #include "sensors.hpp"
 #include <random>
 
-std::mt19937 rand_gen(22);
+std::mt19937 rand_gen(42);
 std::normal_distribution<double> gpsNoise{0, 1.2};
 std::normal_distribution<double> velNoise{0, 0.5};
 

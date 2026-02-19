@@ -18,7 +18,7 @@ double Q_x = 0.1;
 double Q_v = 0.5;
 double Q_a = 0.9;
 
-// std::mt19937 rand_gen(22);
+std::mt19937 accel_gen(42);
 std::normal_distribution<double> accelNoise{0, .1};
 
 std::random_device rd;
@@ -45,7 +45,7 @@ int main()
         else state.a_x = 0.0;
        
         // std::cout << "i is " << i << " state.t_s is " << state.t_s << std::endl;
-        state.a_x += accelNoise(rand_gen);
+        state.a_x += accelNoise(accel_gen);
         state.x_m +=  state.vx_mps*dt + (0.5*state.a_x)*(dt * dt);
         state.vx_mps = state.vx_mps + state.a_x*dt;
 
