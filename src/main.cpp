@@ -18,7 +18,7 @@ double Q_x = 0.1;
 double Q_v = 0.5;
 double Q_a = 0.9;
 
-std::mt19937 rand_gen(22);
+// std::mt19937 rand_gen(22);
 std::normal_distribution<double> accelNoise{0, .1};
 
 std::random_device rd;

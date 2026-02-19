@@ -8,8 +8,8 @@ vel = pd.read_csv("vel.csv")
 
 true_time = truth["t_s"]
 true_x = truth["x_m"]
-vx_truth = truth["vx_mps"]
-ax_truth = truth["a_x"]
+true_vx = truth["vx_mps"]
+true_ax = truth["a_x"]
 
 t_est = est["t_s"] if "t_s" in est.columns else est["time"]
 x_est = est["x"]
@@ -30,3 +30,22 @@ plt.xlabel("time (s)")
 plt.ylabel("position x (m)")
 plt.legend()
 plt.title("Position")
+
+plt.figure()
+plt.plot(true_time, true_vx, label = "true velocity(x)")
+plt.plot(t_est, vx_est, label = "estimated vx")
+plt.scatter(t_vel, vx_meas, label = "measured velocity vx", s = 12)
+plt.xlabel("time (s)")
+plt.ylabel("velocity vx (m/s)")
+plt.legend()
+plt.title("Velocity")
+
+plt.figure()
+plt.plot(true_time, true_ax, label = "true ax")
+plt.plot(t_est, ax_est, label = "estimated ax")
+plt.xlabel("time (s)")
+plt.ylabel("acceleration ax (m/s^2)")
+plt.legend()
+plt.title("Acceleration")
+
+plt.show()
