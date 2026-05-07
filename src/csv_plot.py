@@ -30,7 +30,7 @@ vx_meas = vel["vx"]
 
 plt.figure()
 plt.plot(true_time, true_x, label = "true_x")
-plt.plot(true_time, x_est, label = "estiamted x")
+plt.plot(true_time, x_est, label = "estimated x")
 plt.scatter(t_gps, x_gps, label = "gps x", s = 12)
 plt.xlabel("time (s)")
 plt.ylabel("position x (m)")
