@@ -70,9 +70,9 @@ vector<TelemetryRow> loadTelemetryData(const string &filename)
 void printTelemetryRow(const TelemetryRow &row)
 {
     cout << "Time: " << row.time 
-    << " | Position (" << ", X: " << row.x << ", Y: " << row.y << ", Z: " << row.z << ")"
-    << " | Velocity ("    << ", Vx: " << row.vx << ", Vy: " << row.vy << ", Vz: " << row.vz << ")"
-    << " | Acceleration (" << row.ax << ", " << row.ay << ", " << row.az << ")" << endl;
+    << " | Position (" << " X: " << row.x << ", Y: " << row.y << ", Z: " << row.z << ")"
+    << " | Velocity ("    << " Vx: " << row.vx << ", Vy: " << row.vy << ", Vz: " << row.vz << ")"
+    << " | Acceleration (" << " Ax: " << row.ax << ", Ay: " << row.ay << ", Az: " << row.az << ")" << endl;
 }
 
 void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed)
@@ -81,9 +81,37 @@ void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed)
     {
         printTelemetryRow(rows[i]);
 
+        char input;
+        input = cin.get();
+
+        if(input == '\n')
+        {
+            // No user input, continue playback
+        }
+
+            if(input == 'p' || input == 'Q')
+            {
+                cout << "Playback paused by user. Press r to resume" << endl;
+                while(true)
+                {
+                    cin >> input;
+                    if(input == 'r')
+                    {
+                        cout << "Resuming playback..." << endl;
+                        break;
+                    }
+                    else if(input == 'Q')
+                    {
+                        cout << "Exiting playback..." << endl;
+                        return;
+                    }
+                }
+            
+            }
+
         if(i+1 < rows.size())
         {
-            double diffTime = rows[i+1].time - rows[i].time;
+            double diffTime = rows[i + 1].time - rows[i].time;
             int millisecondDelay = static_cast<int>((diffTime * 1000) / playbackSpeed);
             this_thread::sleep_for(chrono::milliseconds(millisecondDelay));
         }
