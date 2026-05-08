@@ -29,7 +29,7 @@ void Writer::writeRow(State state)
     // outputFile("logs.csv");
     if(outputFile.is_open())
     {
-        outputFile << state.t_s << ", " << state.x_m  << ", " << state.y_m  << ", " << state.z_m  << ", " << state.vx_mps << ", " << state.vy_mps << ", " << state.vz_mps << state.a_x << ", " << state.a_y << ", " << state.a_z;
+        outputFile << state.t_s << ", " << state.x_m  << ", " << state.y_m  << ", " << state.z_m  << ", " << state.vx_mps << ", " << state.vy_mps << ", " << state.vz_mps  << ", " << state.a_x << ", " << state.a_y << ", " << state.a_z;
         outputFile << "\n";
         // outputFile.close();
     }
