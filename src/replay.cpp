@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <conio.h>
 
 
 using namespace std;
@@ -77,37 +78,45 @@ void printTelemetryRow(const TelemetryRow &row)
 
 void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed)
 {
+    bool isPaused = false;
+
     for(int i = 0; i < rows.size(); i++)
     {
-        printTelemetryRow(rows[i]);
-
-        char input;
-        input = cin.get();
-
-        if(input == '\n')
+        if (_kbhit()) // detets if a key was pressed WITHOUT halting our program
         {
-            // No user input, continue playback
+            char key = _getch();
+            if(key == 'p' || key == 'P')
+            {
+                isPaused = true;
+                cout << "Playback paused. Press 'r' to resume or 'q' to quit." << endl;
+            }
+            else if(key == 'q' || key == 'Q')
+            {
+                cout << "\nExiting playback... " << endl;
+                return;
+            }
         }
 
-            if(input == 'p' || input == 'Q')
+        while(isPaused)
+        {
+            if (_kbhit())
             {
-                cout << "Playback paused by user. Press r to resume" << endl;
-                while(true)
+                char key = _getch();
+                if(key == 'r' || key == 'R')
                 {
-                    cin >> input;
-                    if(input == 'r')
-                    {
-                        cout << "Resuming playback..." << endl;
-                        break;
-                    }
-                    else if(input == 'Q')
-                    {
-                        cout << "Exiting playback..." << endl;
-                        return;
-                    }
+                    isPaused = false;
+                    cout << "Resuming playback... " << endl;
                 }
-            
+                else if(key == 'q' || key == 'Q')
+                {
+                    cout << "\nExiting playback... " << endl;
+                    return;
+                }
             }
+            this_thread::sleep_for(chrono::milliseconds(100));
+        }
+
+        printTelemetryRow(rows[i]);        
 
         if(i+1 < rows.size())
         {
@@ -131,6 +140,7 @@ int main()
     cout << "Loaded " << telemetryData.size() << " rows of telemetry data." << endl;
 
     double playbackSpeed = 1.0; 
+    cout << "Controls: Press 'p' to pause, 'r' to resume, 'q' to quit." << endl;
     cout << "Enter playback speed: (e.g., 1 for real-time, 2 for double speed, 0.5 for half speed): ";
     cin >> playbackSpeed;
     replayTelemetry(telemetryData, playbackSpeed);
