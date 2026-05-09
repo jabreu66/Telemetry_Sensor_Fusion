@@ -51,3 +51,29 @@ VelocityMeasurement velocitySimulator(const State &truthState)
 
     return vel;
 }
+
+AccelerationMeasurement::AccelerationMeasurement(double time, double ax, double ay, double az) : time(time), ax(ax), ay(ay), az(az) {}
+
+AccelerationMeasurement::AccelerationMeasurement(const State &state) : time(state.t_s), ax(state.a_x), ay(state.a_y), az(state.a_z) {}
+
+// AccelerationMeasurement::AccelerationMeasurement(){}
+
+
+AccelerationMeasurement accelerationSimulator(const State &truthState)
+{
+    AccelerationMeasurement acc(truthState);
+
+    double ax_noise = velNoise(rand_gen);
+    acc.ax += ax_noise;
+
+    double ay_noise = velNoise(rand_gen);
+    acc.ay += ay_noise;
+
+    double az_noise = velNoise(rand_gen);
+    acc.az += az_noise;
+
+    return acc;
+}
+
+
+

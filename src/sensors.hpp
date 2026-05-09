@@ -30,4 +30,18 @@ struct VelocityMeasurement
 
 VelocityMeasurement velocitySimulator(const State &truthState);
 
+struct AccelerationMeasurement
+{
+    double time;
+    double ax;
+    double ay;
+    double az;
+
+    AccelerationMeasurement(double time, double ax, double ay, double az);
+    AccelerationMeasurement(const State &state);
+    // AccelerationMeasurement();
+};
+
+AccelerationMeasurement accelerationSimulator(const State &truthState);
+
 #endif
