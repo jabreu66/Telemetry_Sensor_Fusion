@@ -76,11 +76,24 @@ void printTelemetryRow(const TelemetryRow &row)
     << " | Acceleration (" << " Ax: " << row.ax << ", Ay: " << row.ay << ", Az: " << row.az << ")" << endl;
 }
 
-void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed)
+int findTimestampIndex(const vector<TelemetryRow> &rows, double timestamp)
+{
+    for(int i = 0; i < rows.size(); i++)
+    {
+        if(rows[i].time >= timestamp)
+        {
+            return i;
+        }
+    }
+
+    return rows.size() - 1;
+}
+
+void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed, int startIndex)
 {
     bool isPaused = false;
 
-    for(int i = 0; i < rows.size(); i++)
+    for(int i = startIndex; i < rows.size(); i++)
     {
         if (_kbhit()) // detets if a key was pressed WITHOUT halting our program
         {
@@ -140,10 +153,19 @@ int main()
     cout << "Loaded " << telemetryData.size() << " rows of telemetry data." << endl;
 
     double playbackSpeed = 1.0; 
+    double startTime;
     cout << "Controls: Press 'p' to pause, 'r' to resume, 'q' to quit." << endl;
+    cout << "Enter start time for playback (e.g., 0 for beginning): ";
+    cin >> startTime;
+    int startIndex = findTimestampIndex(telemetryData, startTime);  
     cout << "Enter playback speed: (e.g., 1 for real-time, 2 for double speed, 0.5 for half speed): ";
     cin >> playbackSpeed;
-    replayTelemetry(telemetryData, playbackSpeed);
+    if(playbackSpeed <= 0)
+    {
+        cout << "Playback speed is invalid, defaulting to 1" << endl;
+        playbackSpeed = 1.0;
+    }
+    replayTelemetry(telemetryData, playbackSpeed, startIndex);
 
     return 0;
 }

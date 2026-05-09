@@ -49,6 +49,23 @@ int main()
         state.x_m +=  state.vx_mps*dt + (0.5*state.a_x)*(dt * dt);
         state.vx_mps = state.vx_mps + state.a_x*dt;
 
+        if(i < 3)
+        {
+            state.a_z = 1.0;
+        }
+        else if( i >= 3 && i < 7)
+        {
+            state.a_z = 0.0;
+        }
+        else
+        {
+            state.a_z = -0.5;
+        }
+
+        state.z_m += state.vz_mps * dt + (0.5 * state.a_z) * (dt * dt);
+        state.vz_mps += state.a_z * dt;
+
+
         estimated_state new_est_state = est_state.prediction(Q_x, Q_v, Q_a, dt);
 
         gps_update = (step % 10 == 0);
