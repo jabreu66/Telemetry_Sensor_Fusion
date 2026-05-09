@@ -68,6 +68,43 @@ vector<TelemetryRow> loadTelemetryData(const string &filename)
     return rows;
 }
 
+vector<TelemetryRow> loadEstimateData(const string &filename)
+{
+    vector<TelemetryRow> rows;
+    ifstream inputFile(filename);
+
+    if(!inputFile.is_open())
+    {
+        cout << "Error: unable to open the file" << endl;
+        return rows;
+    }
+
+    string line;
+
+    while(getline(inputFile, line))
+    {
+        stringstream ss(line);
+        string value;
+        vector<double> values;
+
+        while(getline(ss, value, ','))
+        {
+            values.push_back(stod(value));
+        }
+        
+        if(values.size() >= 3)
+        {
+            TelemetryRow row;
+            row.x = values[0];
+            row.vx = values[1];
+            row.ax = values[2];
+
+            rows.push_back(row);
+        }
+    }
+    return rows;
+}
+
 void printTelemetryRow(const TelemetryRow &row)
 {
     cout << "Time: " << row.time 
@@ -76,10 +113,30 @@ void printTelemetryRow(const TelemetryRow &row)
     << " | Acceleration (" << " Ax: " << row.ax << ", Ay: " << row.ay << ", Az: " << row.az << ")" << endl;
 }
 
+void printComparisonRows(const TelemetryRow &truth, const TelemetryRow &estimate)
+{
+    cout << "Time: " << truth.time 
+
+    << " True Position: " << " X: " << truth.x << ", Y: " << truth.y << ", Z: " << truth.z << ")"
+    << " | Estimated Position: " << " X: " << estimate.x << ", Y: " << estimate.y << ", Z: " << estimate.z << ")"
+
+    << " True Velocity ("    << " Vx: " << truth.vx << ", Vy: " << truth.vy << ", Vz: " << truth.vz << ")"
+    << " | Estimated Velocity ("    << " Vx: " << estimate.vx << ", Vy: " << estimate.vy << ", Vz: " << estimate.vz << ")"
+
+    << " True Acceleration (" << " Ax: " << truth.ax << ", Ay: " << truth.ay << ", Az: " << truth.az << ")" 
+    << " | Estimated Acceleration (" << " Ax: " << estimate.ax << ", Ay: " << estimate.ay << ", Az: " << estimate.az << ")" << endl;
+}
+
 int findTimestampIndex(const vector<TelemetryRow> &rows, double timestamp)
 {
+    if(timestamp == NAN)
+    {
+        return -1;
+    }
+
     for(int i = 0; i < rows.size(); i++)
     {
+
         if(rows[i].time >= timestamp)
         {
             return i;
@@ -89,11 +146,11 @@ int findTimestampIndex(const vector<TelemetryRow> &rows, double timestamp)
     return rows.size() - 1;
 }
 
-void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed, int startIndex)
+void replayTelemetry(vector<TelemetryRow> &truthRows, vector<TelemetryRow> &estimateRows, double playbackSpeed, int startIndex)
 {
     bool isPaused = false;
 
-    for(int i = startIndex; i < rows.size(); i++)
+    for(int i = startIndex; i < truthRows.size(); i++)
     {
         if (_kbhit()) // detets if a key was pressed WITHOUT halting our program
         {
@@ -129,11 +186,12 @@ void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed, int start
             this_thread::sleep_for(chrono::milliseconds(100));
         }
 
-        printTelemetryRow(rows[i]);        
+        // printTelemetryRow(truthRows[i]);   
+        printComparisonRows(truthRows[i], estimateRows[i]);     
 
-        if(i+1 < rows.size())
+        if(i+1 < truthRows.size())
         {
-            double diffTime = rows[i + 1].time - rows[i].time;
+            double diffTime = truthRows[i + 1].time - truthRows[i].time;
             int millisecondDelay = static_cast<int>((diffTime * 1000) / playbackSpeed);
             this_thread::sleep_for(chrono::milliseconds(millisecondDelay));
         }
@@ -142,22 +200,24 @@ void replayTelemetry(vector<TelemetryRow> &rows, double playbackSpeed, int start
 
 int main()
 {
-    vector<TelemetryRow> telemetryData = loadTelemetryData("logs.csv");
+    vector<TelemetryRow> truthData = loadTelemetryData("logs.csv");
+    vector<TelemetryRow> estimateData = loadEstimateData("estimate.csv");
 
-    if(telemetryData.size() == 0)
+    if(truthData.size() == 0 || estimateData.size() == 0)
     {
+        cout << truthData.size() << " rows of truth data and " << estimateData.size() << " rows of estimate data loaded." << endl;
         cout << "No telemetry data loaded." << endl;
         return 1;
     }
 
-    cout << "Loaded " << telemetryData.size() << " rows of telemetry data." << endl;
+    cout << "Loaded " << truthData.size() << " rows of truth data and " << estimateData.size() << " rows of estimate data." << endl;
 
     double playbackSpeed = 1.0; 
     double startTime;
     cout << "Controls: Press 'p' to pause, 'r' to resume, 'q' to quit." << endl;
     cout << "Enter start time for playback (e.g., 0 for beginning): ";
     cin >> startTime;
-    int startIndex = findTimestampIndex(telemetryData, startTime);  
+    int startIndex = findTimestampIndex(truthData, startTime);  
     cout << "Enter playback speed: (e.g., 1 for real-time, 2 for double speed, 0.5 for half speed): ";
     cin >> playbackSpeed;
     if(playbackSpeed <= 0)
@@ -165,7 +225,7 @@ int main()
         cout << "Playback speed is invalid, defaulting to 1" << endl;
         playbackSpeed = 1.0;
     }
-    replayTelemetry(telemetryData, playbackSpeed, startIndex);
+    replayTelemetry(truthData, estimateData, playbackSpeed, startIndex);
 
     return 0;
 }
