@@ -5,6 +5,7 @@
 std::mt19937 rand_gen(42);
 std::normal_distribution<double> gpsNoise{0, 1.2};
 std::normal_distribution<double> velNoise{0, 0.5};
+std::normal_distribution<double> accelNoise{0, .1};
 
 
 
@@ -63,13 +64,13 @@ AccelerationMeasurement accelerationSimulator(const State &truthState)
 {
     AccelerationMeasurement acc(truthState);
 
-    double ax_noise = velNoise(rand_gen);
+    double ax_noise = accelNoise(rand_gen);
     acc.ax += ax_noise;
 
-    double ay_noise = velNoise(rand_gen);
+    double ay_noise = accelNoise(rand_gen);
     acc.ay += ay_noise;
 
-    double az_noise = velNoise(rand_gen);
+    double az_noise = accelNoise(rand_gen);
     acc.az += az_noise;
 
     return acc;
