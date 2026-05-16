@@ -6,17 +6,17 @@ class estimated_state{
     public:
         // double time;
         bool has_gps, has_vel;
-        double vx;
-        double x;
-        double ax;
+        static const int STATE_SIZE = 6;
+
         // double pos_variance, vel_variance, acc_variance;
-        double cov_matrix [3][3];
+        double state[STATE_SIZE];
+        double cov_matrix[STATE_SIZE][STATE_SIZE];
 
         estimated_state();
-        estimated_state(double pos, double vel, double acc, double p_var, double v_var, double a_var);
+        estimated_state(double initial_state[STATE_SIZE], double initial_variance[STATE_SIZE]);
 
-        estimated_state prediction(double Q_x, double Q_v, double Q_a, double dt);
-        estimated_state correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel, bool has_gps, bool has_vel);
+        estimated_state prediction(double process_noise[STATE_SIZE], double dt);
+        estimated_state correction(double gps_measurement[2], double vel_measurement[2], double gps_variance, double vel_variance, bool has_gps, bool has_vel);
 };
 
 #endif
