@@ -3,97 +3,129 @@
 #include <cmath>
 
 
-estimated_state::estimated_state(double pos, double vel, double acc, double p_var, double v_var, double a_var) : x(pos), vx(vel), ax(acc) 
+estimated_state::estimated_state(double initial_state[STATE_SIZE], double initial_variance[STATE_SIZE]) 
 {
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        state[i] = initial_state[i];
+    }
+
+    for(int i = 0; i < STATE_SIZE; i++)
+    {
+        for(int j = 0; j < STATE_SIZE; j++)
         {
             cov_matrix[i][j] = 0;
         }
     }
 
-    cov_matrix[0][0] = p_var;
-    cov_matrix[1][1] = v_var;
-    cov_matrix[2][2] = a_var;
+   for(int i = 0; i < STATE_SIZE; i++)
+   {
+        cov_matrix[i][i] = initial_variance[i];
+   }
 }
 
-estimated_state::estimated_state() : x(0), vx(0), ax(0)
+estimated_state::estimated_state()
 {
-
-}
-
-estimated_state estimated_state::prediction(double Q_x, double Q_v, double Q_a, double dt)
-{
-    // estimated_state est;
-    double x_pred = this->x + this->vx*dt + (0.5*this->ax)*(dt * dt);
-    double vx_pred = this->vx + this->ax*dt;
-    double ax_pred = this->ax;
-    double F[3][3] = {{1, dt, 0.5*dt*dt}, {0, 1, dt}, {0, 0, 1}};
-
-    double Q[6][6] = {};
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        state[i] = 0;
+    }
+
+    for(int i = 0; i < STATE_SIZE; i++)
+    {
+        for(int j = 0; j < STATE_SIZE; j++)
         {
-            Q[i][j] = 0;
+            cov_matrix[i][j] = 0;
         }
     }
 
-    Q[0][0] = Q_x;
-    Q[1][1] = Q_v;
-    Q[2][2] = Q_a;
+}
 
-    double FP[3][3] = {};
+estimated_state estimated_state::prediction(double process_noise[STATE_SIZE], double dt)
+{
+    double predicted_state[STATE_SIZE] = {};
 
-    for(int i = 0; i < 3; i++)
+    
+    predicted_state[0] = state[0] + state[1] * dt + 0.5 * state[2] * dt * dt;
+    predicted_state[1] = state[1] + state[2] * dt;
+    predicted_state[2] = state[2];
+
+    predicted_state[3] = state[3] + state[4] * dt + 0.5 * state[5] * dt * dt;
+    predicted_state[4] = state[4] + state[5] * dt;
+    predicted_state[5] = state[5];
+
+    double F[STATE_SIZE][STATE_SIZE] = {
+    {1, dt, 0.5*dt*dt,  0, 0, 0}, // x 
+    {0, 1, dt,          0, 0, 0}, // vx
+    {0, 0, 1,           0, 0, 0}, // ax
+    {0, 0, 0,           1, dt, 0.5*dt*dt}, // y
+    {0, 0, 0,           0, 1, dt}, // vy
+    {0, 0, 0,           0, 0, 1}}; // ay
+
+    double Q[STATE_SIZE][STATE_SIZE] = {};
+
+   for (int i = 0; i < STATE_SIZE; i++)
+   {
+        Q[i][i] = process_noise[i];
+   }
+
+    double FP[STATE_SIZE][STATE_SIZE] = {};
+
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < STATE_SIZE; j++)
         {
-            for(int k = 0; k < 3; k++)
+            for(int k = 0; k < STATE_SIZE; k++)
             {                
                 FP[i][j] +=  F[i][k] * this->cov_matrix[k][j];
             }    
         }
     }
 
-    double FT[3][3] = {};
+    double FT[STATE_SIZE][STATE_SIZE] = {};
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < STATE_SIZE; j++)
         {
           FT[i][j] = F[j][i];
         }
     }
 
-    double p_pred[3][3] = {};
+    double p_pred[STATE_SIZE][STATE_SIZE] = {};
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < STATE_SIZE; j++)
         {
-            for(int k = 0; k < 3; k++)
+            for(int k = 0; k < STATE_SIZE; k++)
             {
                 p_pred[i][j] += FP[i][k] * FT[k][j];
             } 
         }
     }
 
-   for(int i = 0; i < 3; i++)
+   for(int i = 0; i < STATE_SIZE; i++)
    {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < STATE_SIZE; j++)
         {
             p_pred[i][j] += Q[i][j];
         }
    }
 
-    
-    estimated_state est_state(x_pred, vx_pred, ax_pred, p_pred[0][0], p_pred[1][1], p_pred[2][2]);
+   double predicted_variance[STATE_SIZE] = {};
 
-    for(int i = 0; i < 3; i++)
+   for(int i = 0; i < STATE_SIZE; i++)
+   {
+        predicted_variance[i] = p_pred[i][i];
+   }
+
+    
+    estimated_state est_state(predicted_state, predicted_variance);
+
+    for(int i = 0; i < STATE_SIZE; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < STATE_SIZE; j++)
         {
            est_state.cov_matrix[i][j] = p_pred[i][j];
         }
