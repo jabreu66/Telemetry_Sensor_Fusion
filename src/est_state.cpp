@@ -238,45 +238,76 @@ if(has_gps){
 }   
    // vel sec
 if(has_vel){
-    // double vel_innovation = vx_meas - vx_pred;
-    // if(std::abs(vel_innovation) > 20)
-    // {
-    //     has_vel = false;
-    // }
-    //         if(has_vel){
-    //         total_uncertainty = this->cov_matrix[1][1] + R_vel;
-        
-    //         Kx = this->cov_matrix[0][1] / total_uncertainty;
-    //         Kv = this->cov_matrix[1][1] / total_uncertainty;
-    //         Ka = this->cov_matrix[2][1] / total_uncertainty;
 
-    //     x_pred = x_pred + Kx * vel_innovation;
-    //     vx_pred = vx_pred + Kv * vel_innovation;
-    //     ax_pred = ax_pred + Ka * vel_innovation;
+    double vel_x_innovation = vel_measurement[0] - corrected.state[1];
 
-    //     double row1[3] = {this->cov_matrix[1][0], this->cov_matrix[1][1], this->cov_matrix[1][2]};
-    //     double vK[3] = {Kx, Kv, Ka};
+    if(std::abs(vel_x_innovation <= 20))
+    {
+        double total_uncertainty = corrected.cov_matrix[1][1] + vel_variance;
+        double K[STATE_SIZE] = {};
 
-    //     for(int i = 0; i < 3; i++)
-    //     {
-    //             for(int j = 0; j < 3; j++)
-    //             {
-    //                 this->cov_matrix[i][j] -= vK[i] * row1[j]; 
-    //             }
-    //     }
-    // }
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+            K[i] = corrected.cov_matrix[i][1] / total_uncertainty;
+        }
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+            corrected.state[i] = corrected.state[i] + K[i] * vel_x_innovation;
+        }
+
+        double measurement_row[STATE_SIZE] = {};
+
+        for(int j = 0; j < STATE_SIZE; j++)
+        {
+            measurement_row[j] = corrected.cov_matrix[1][j];
+        }
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+                for(int j = 0; j < STATE_SIZE; j++)
+                {
+                    corrected.cov_matrix[i][j] -= K[i] * measurement_row[j]; 
+                }
+        }
+    }
+
+    double vel_y_innovation = vel_measurement[1] - corrected.state[4];
+
+    if(std::abs(vel_y_innovation <= 20))
+    {
+        double total_uncertainty = corrected.cov_matrix[4][4] + vel_variance;
+        double K[STATE_SIZE] = {};
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+            K[i] = corrected.cov_matrix[i][4] / total_uncertainty;
+        }
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+            corrected.state[i] = corrected.state[i] + K[i] * vel_y_innovation;
+        }
+
+        double measurement_row[STATE_SIZE] = {};
+
+        for(int j = 0; j < STATE_SIZE; j++)
+        {
+            measurement_row[j] = corrected.cov_matrix[4][j];
+        }
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+                for(int j = 0; j < STATE_SIZE; j++)
+                {
+                    corrected.cov_matrix[i][j] -= K[i] * measurement_row[j]; 
+                }
+        }
+    }
 }
 
-   estimated_state corrected(x_pred, vx_pred, ax_pred, this->cov_matrix[0][0], this->cov_matrix[1][1], this->cov_matrix[2][2]);
+//    estimated_state corrected(x_pred, vx_pred, ax_pred, this->cov_matrix[0][0], this->cov_matrix[1][1], this->cov_matrix[2][2]);
 
-   for(int i = 0; i < 3; i++)
-   {
-        for(int j = 0; j < 3; j++)
-        {
-            corrected.cov_matrix[i][j] = this->cov_matrix[i][j];
-        }
-   }
    return corrected;
    
-    // return estimated_state(x_new, v_new, P_x_new, P_v_new, P_A_new);
 }
