@@ -157,11 +157,8 @@ estimated_state estimated_state::correction(double gps_measurement[2], double ve
 if(has_gps){
    double gps_x_innovation = gps_measurement[0] - corrected.state[0];
 
-   if(std::abs(gps_x_innovation) > 50){
-        has_gps = false;
-   }
-
-   if(has_gps){
+    if(std::abs(gps_x_innovation) <= 50)
+    {
         double total_uncertainty = corrected.cov_matrix[0][0] + gps_variance;
 
         double K[STATE_SIZE] = {};
@@ -195,15 +192,8 @@ if(has_gps){
 
     double gps_y_innovation = gps_measurement[1] - corrected.state[3];
 
-   if(std::abs(gps_y_innovation) > 50){
-        has_gps = false;
-   }
-   else
-   {
-    has_gps = true;
-   }
-
-   if(has_gps){
+   if(std::abs(gps_y_innovation) <= 50){
+        
         double total_uncertainty = corrected.cov_matrix[3][3] + gps_variance;
 
         double K[STATE_SIZE] = {};
@@ -241,7 +231,7 @@ if(has_vel){
 
     double vel_x_innovation = vel_measurement[0] - corrected.state[1];
 
-    if(std::abs(vel_x_innovation <= 20))
+    if(std::abs(vel_x_innovation) <= 20)
     {
         double total_uncertainty = corrected.cov_matrix[1][1] + vel_variance;
         double K[STATE_SIZE] = {};
@@ -274,7 +264,7 @@ if(has_vel){
 
     double vel_y_innovation = vel_measurement[1] - corrected.state[4];
 
-    if(std::abs(vel_y_innovation <= 20))
+    if(std::abs(vel_y_innovation) <= 20)
     {
         double total_uncertainty = corrected.cov_matrix[4][4] + vel_variance;
         double K[STATE_SIZE] = {};
