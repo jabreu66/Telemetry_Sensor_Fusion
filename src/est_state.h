@@ -17,6 +17,7 @@ class estimated_state{
 
         estimated_state prediction(double process_noise[STATE_SIZE], double dt);
         estimated_state correction(double gps_measurement[2], double vel_measurement[2], double gps_variance, double vel_variance, bool has_gps, bool has_vel);
+        //gps[x, y], vel_measurement[x, y]
 };
 
 #endif

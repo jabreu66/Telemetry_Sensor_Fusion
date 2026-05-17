@@ -135,72 +135,136 @@ estimated_state estimated_state::prediction(double process_noise[STATE_SIZE], do
     
 }
 
-estimated_state estimated_state::correction(double x_pred, double vx_pred, double ax_pred, double x_gps, double vx_meas, double R_gps, double R_vel, bool has_gps, bool has_vel)
+estimated_state estimated_state::correction(double gps_measurement[2], double vel_measurement[2], double gps_variance, double vel_variance, bool has_gps, bool has_vel)
 {
-    double total_uncertainty = 0;
-    double Kx = 0;
-    double Kv = 0;
-    double Ka = 0;
+    
+    estimated_state corrected;
+
+    for(int i = 0; i < STATE_SIZE; i++)
+    {
+        corrected.state[i] = this->state[i];
+
+        for(int j = 0; j < STATE_SIZE; j++)
+        {
+            corrected.cov_matrix[i][j] = this->cov_matrix[i][j];    
+        }
+    }
+
+    corrected.has_gps = has_gps;
+    corrected.has_vel = has_vel;
+
 //    this->cov_matrix;
 if(has_gps){
-   double gps_innovation = x_gps - x_pred;
+   double gps_x_innovation = gps_measurement[0] - corrected.state[0];
 
-   if(std::abs(gps_innovation) > 50){
+   if(std::abs(gps_x_innovation) > 50){
         has_gps = false;
    }
 
    if(has_gps){
-        total_uncertainty = this->cov_matrix[0][0] + R_gps;
+        double total_uncertainty = corrected.cov_matrix[0][0] + gps_variance;
+
+        double K[STATE_SIZE] = {};
         
-        Kx = this->cov_matrix[0][0] / total_uncertainty;
-        Kv = this->cov_matrix[1][0] / total_uncertainty; 
-        Ka = this->cov_matrix[2][0] / total_uncertainty;
+      for(int i = 0; i < STATE_SIZE; i++)
+      {
+        K[i] = corrected.cov_matrix[i][0] / total_uncertainty;
+      }
 
-        x_pred = x_pred + Kx * gps_innovation;
-        vx_pred = vx_pred + Kv * gps_innovation;
-        ax_pred = ax_pred + Ka * gps_innovation;
+      for(int i = 0; i < STATE_SIZE; i++)
+      {
+        corrected.state[i] = corrected.state[i] + K[i] * gps_x_innovation;
+      }
 
-        double row0[3] = {this->cov_matrix[0][0], this->cov_matrix[0][1], this->cov_matrix[0][2]};
-        double K[3] = {Kx, Kv, Ka};
+    
+      double measurement_row[STATE_SIZE] = {};
 
-        for(int i = 0; i < 3; i++)
+      for(int j = 0; j < STATE_SIZE; j++)
+      {
+        measurement_row[j] = corrected.cov_matrix[0][j];
+      }
+
+        for(int i = 0; i < STATE_SIZE; i++)
         {
-            for(int j = 0; j < 3; j++)
+            for(int j = 0; j < STATE_SIZE; j++)
             {
-                this->cov_matrix[i][j] -= K[i] * row0[j]; 
+               corrected.cov_matrix[i][j] = corrected.cov_matrix[i][j] - K[i] * measurement_row[j];
             }
         }
     }
+
+    double gps_y_innovation = gps_measurement[1] - corrected.state[3];
+
+   if(std::abs(gps_y_innovation) > 50){
+        has_gps = false;
+   }
+   else
+   {
+    has_gps = true;
+   }
+
+   if(has_gps){
+        double total_uncertainty = corrected.cov_matrix[3][3] + gps_variance;
+
+        double K[STATE_SIZE] = {};
+        
+      for(int i = 0; i < STATE_SIZE; i++)
+      {
+        K[i] = corrected.cov_matrix[i][3] / total_uncertainty;
+      }
+
+      for(int i = 0; i < STATE_SIZE; i++)
+      {
+        corrected.state[i] = corrected.state[i] + K[i] * gps_y_innovation;
+      }
+
+    
+      double measurement_row[STATE_SIZE] = {};
+
+      for(int j = 0; j < STATE_SIZE; j++)
+      {
+        measurement_row[j] = corrected.cov_matrix[3][j];
+      }
+
+        for(int i = 0; i < STATE_SIZE; i++)
+        {
+            for(int j = 0; j < STATE_SIZE; j++)
+            {
+               corrected.cov_matrix[i][j] = corrected.cov_matrix[i][j] - K[i] * measurement_row[j];
+            }
+        }
+    }
+    
 }   
    // vel sec
 if(has_vel){
-    double vel_innovation = vx_meas - vx_pred;
-    if(std::abs(vel_innovation) > 20)
-    {
-        has_vel = false;
-    }
-            if(has_vel){
-            total_uncertainty = this->cov_matrix[1][1] + R_vel;
+    // double vel_innovation = vx_meas - vx_pred;
+    // if(std::abs(vel_innovation) > 20)
+    // {
+    //     has_vel = false;
+    // }
+    //         if(has_vel){
+    //         total_uncertainty = this->cov_matrix[1][1] + R_vel;
         
-            Kx = this->cov_matrix[0][1] / total_uncertainty;
-            Kv = this->cov_matrix[1][1] / total_uncertainty;
-            Ka = this->cov_matrix[2][1] / total_uncertainty;
+    //         Kx = this->cov_matrix[0][1] / total_uncertainty;
+    //         Kv = this->cov_matrix[1][1] / total_uncertainty;
+    //         Ka = this->cov_matrix[2][1] / total_uncertainty;
 
-        x_pred = x_pred + Kx * vel_innovation;
-        vx_pred = vx_pred + Kv * vel_innovation;
-        ax_pred = ax_pred + Ka * vel_innovation;
+    //     x_pred = x_pred + Kx * vel_innovation;
+    //     vx_pred = vx_pred + Kv * vel_innovation;
+    //     ax_pred = ax_pred + Ka * vel_innovation;
 
-        double row1[3] = {this->cov_matrix[1][0], this->cov_matrix[1][1], this->cov_matrix[1][2]};
-        double vK[3] = {Kx, Kv, Ka};
+    //     double row1[3] = {this->cov_matrix[1][0], this->cov_matrix[1][1], this->cov_matrix[1][2]};
+    //     double vK[3] = {Kx, Kv, Ka};
 
-        for(int i = 0; i < 3; i++)
-        {
-                for(int j = 0; j < 3; j++)
-                {
-                    this->cov_matrix[i][j] -= vK[i] * row1[j]; 
-                }
-        }
-    }
+    //     for(int i = 0; i < 3; i++)
+    //     {
+    //             for(int j = 0; j < 3; j++)
+    //             {
+    //                 this->cov_matrix[i][j] -= vK[i] * row1[j]; 
+    //             }
+    //     }
+    // }
 }
 
    estimated_state corrected(x_pred, vx_pred, ax_pred, this->cov_matrix[0][0], this->cov_matrix[1][1], this->cov_matrix[2][2]);
