@@ -14,9 +14,9 @@ Writer est("estimate.csv");
 double R_gps = 4;
 double R_vel = 1;
 
-double Q_x = 0.1;
-double Q_v = 0.5;
-double Q_a = 0.9;
+double process_noise[STATE_SIZE] = {0.1, 0.5, 0.9, 0.1, 0.5, 0.9};
+double states[STATE_SIZE] = {0, 50, 2, 0, 0, 0};
+double variances[STATE_SIZE] = {4, 1, 4, 4, 1, 4};
 
 std::mt19937 accel_gen(42);
 std::normal_distribution<double> accelNoise{0, .1};
@@ -32,7 +32,7 @@ int main()
     float dt = 0.1; // delta time
     // cout << "Hello World " << endl;
     State state(0, 0, 0, 0, 50, 0, 0, 2, 0, 0);
-    estimated_state est_state(0, 50, 2, 4, 1, 4);
+    estimated_state est_state(states, variances);
     int step = 0;
     bool vel_update = false, gps_update = false;
     for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
@@ -66,7 +66,7 @@ int main()
         state.vz_mps += state.a_z * dt;
 
 
-        estimated_state new_est_state = est_state.prediction(Q_x, Q_v, Q_a, dt);
+        estimated_state new_est_state = est_state.prediction(process_noise, dt);
 
         gps_update = (step % 10 == 0);
         int gps_dropoff = distrib(gen);
@@ -100,13 +100,16 @@ int main()
             }
         }
 
-        step++;
+        double gps_measurement[2] = {gpsObject.x, gpsObject.y};
+        double vel_measurement[2] = {velObject.vx, velObject.vy};
 
-        estimated_state corrected_est_state = new_est_state.correction(new_est_state.x, new_est_state.vx, new_est_state.ax, gpsObject.x, velObject.vx, R_gps, R_vel, gps_update, vel_update);
+        estimated_state corrected_est_state = new_est_state.correction(gps_measurement, vel_measurement, R_gps, R_vel, gps_update, vel_update);
         est_state = corrected_est_state;
 
         w.writeRow(state);   
         est.writeRowEst(corrected_est_state);
+
+        step++;
     }
     return 0;
 }
