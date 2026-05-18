@@ -1,7 +1,7 @@
 #include "visualizer.h"
 #include <optional>
 
-Visualizer::Visualizer() : window(sf::Videomode({1000u, 800u}, "Telemetry Sensor Fusion"), scale(5.0f), x_offset(100.0f), y_offset(400.0f))
+Visualizer::Visualizer() : window(sf::VideoMode({1000u, 800u}), "Telemetry Sensor Fusion"), scale(5.0f), x_offset(100.0f), y_offset(400.0f)
 {
 
 }
@@ -15,9 +15,9 @@ void Visualizer::handleEvents()
 {
     while(const std::optional event = window.pollEvent())
     {
-        if(event->is<sf::Event::closed>())
+        if(event->is<sf::Event::Closed>())
         {
-            window.close
+            window.close();
         }
     }
 }

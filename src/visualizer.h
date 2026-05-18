@@ -17,11 +17,11 @@ class Visualizer
 
         bool isOpen();
         void handleEvents();
-}
+};
 
 
 
-#endif VISUALIZER_H
+#endif 
 
 
 
