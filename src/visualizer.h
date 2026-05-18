@@ -12,11 +12,14 @@ class Visualizer
         float x_offset;
         float y_offset;
 
+        sf::Vector2f convertToScreen(double x, double y);
+
     public: 
         Visualizer();
 
         bool isOpen();
         void handleEvents();
+        void drawPoint(double x, double y, sf::Color color, float radius);
 };
 
 
