@@ -1,12 +1,15 @@
 #ifndef ESTIMATED_STATE
 #define ESTIMATED_STATE
 
+
+static const int STATE_SIZE = 6; //x, vx, ax, y, vy, ay
+
 class estimated_state{
+
 
     public:
         // double time;
         bool has_gps, has_vel;
-        static const int STATE_SIZE = 6; //x, vx, ax, y, vy, ay
 
         // double pos_variance, vel_variance, acc_variance;
         double state[STATE_SIZE];

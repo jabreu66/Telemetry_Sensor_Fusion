@@ -53,11 +53,12 @@ void Writer::writeRowVel(VelocityMeasurement state)
     }
 }
 
-void Writer::writeRowEst(estimated_state state)
+void Writer::writeRowEst(const estimated_state &est_state)
 {
     if(outputFile.is_open())
     {
-        outputFile  << state.x  << ", " << state.vx << ", " << state.ax;
+        outputFile  << est_state.state[0]  << ", " << est_state.state[1] << ", " << est_state.state[2] <<
+        ", " << est_state.state[3] << ", " << est_state.state[4] << ", " << est_state.state[5];
         outputFile << "\n";
     }
 }

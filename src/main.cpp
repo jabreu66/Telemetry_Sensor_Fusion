@@ -19,7 +19,7 @@ double states[STATE_SIZE] = {0, 50, 2, 0, 0, 0};
 double variances[STATE_SIZE] = {4, 1, 4, 4, 1, 4};
 
 std::mt19937 accel_gen(42);
-std::normal_distribution<double> accelNoise{0, .1};
+// std::normal_distribution<double> accelNoise{0, .1};
 
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -45,7 +45,8 @@ int main()
         else state.a_x = 0.0;
        
         // std::cout << "i is " << i << " state.t_s is " << state.t_s << std::endl;
-        state.a_x += accelNoise(accel_gen);
+        // AccelerationMeasurement accelObj = accelerationSimulator(state);
+        
         state.x_m +=  state.vx_mps*dt + (0.5*state.a_x)*(dt * dt);
         state.vx_mps = state.vx_mps + state.a_x*dt;
 

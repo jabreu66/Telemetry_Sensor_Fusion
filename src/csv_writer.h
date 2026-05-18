@@ -21,7 +21,7 @@ class Writer{
         void writeRowVel(VelocityMeasurement state);
         std::ofstream outputFile;
         // std::ifstream file;
-        void writeRowEst(estimated_state state);
+        void writeRowEst(const estimated_state &est_state);
 
     
 
