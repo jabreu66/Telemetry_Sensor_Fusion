@@ -17,9 +17,9 @@ Writer est("estimate.csv");
 double R_gps = 4;
 double R_vel = 1;
 
-double process_noise[STATE_SIZE] = {0.1, 0.5, 0.9, 0.1, 0.5, 0.9};
-double states[STATE_SIZE] = {0, 50, 2, 0, 0, 0};
-double variances[STATE_SIZE] = {4, 1, 4, 4, 1, 4};
+double process_noise[STATE_SIZE] = {0.1, 0.5, 0.9, 0.1, 0.5, 0.9, 0.1, 0.5, 0.9};
+double states[STATE_SIZE] = {0, 0, 1000, 50, 0, 5, 0, 0, 0};
+double variances[STATE_SIZE] = {4, 1, 4, 4, 1, 4, 4, 1, 4};
 
 std::mt19937 accel_gen(42);
 // std::normal_distribution<double> accelNoise{0, .1};
@@ -34,14 +34,14 @@ int main()
 {
     float dt = 0.1; // delta time
     // cout << "Hello World " << endl;
-    State state(0, 0, 0, 0, 50, 0, 0, 2, 0, 0);
+    State state(0, 0, 0, 1000, 50, 0, 5, 0, 0, 0);
     estimated_state est_state(states, variances);
     int step = 0;
     bool vel_update = false, gps_update = false;
 
     Visualizer visualizer;
 
-    for(float i = 0; i < 10 && visualizer.isOpen(); i += dt) // increase time by 0.1 seconds
+    for(float i = 0; i < 40 && visualizer.isOpen(); i += dt) // increase time by 0.1 seconds
     {
         
         state.t_s = i;
@@ -107,8 +107,8 @@ int main()
             }
         }
 
-        double gps_measurement[2] = {gpsObject.x, gpsObject.y};
-        double vel_measurement[2] = {velObject.vx, velObject.vy};
+        double gps_measurement[3] = {gpsObject.x, gpsObject.y, gpsObject.z};
+        double vel_measurement[3] = {velObject.vx, velObject.vy, velObject.vz};
 
         estimated_state corrected_est_state = new_est_state.correction(gps_measurement, vel_measurement, R_gps, R_vel, gps_update, vel_update);
         est_state = corrected_est_state;
@@ -120,13 +120,18 @@ int main()
         visualizer.clear();
 
         visualizer.drawPoint(state.x_m, state.z_m, sf::Color::Green, 4.0f);
-        visualizer.drawPoint(corrected_est_state.state[0], corrected_est_state.state[3], sf::Color::Red, 4.0f);
+        visualizer.drawPoint(corrected_est_state.state[0], corrected_est_state.state[6], sf::Color::Red, 4.0f);
 
         visualizer.display();
 
-        sf::sleep(sf::milliseconds(100));
+        sf::sleep(sf::milliseconds(50));
 
         step++;
+    }
+
+    while(visualizer.isOpen())
+    {
+        visualizer.handleEvents();
     }
     return 0;
 }

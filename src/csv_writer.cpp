@@ -58,7 +58,8 @@ void Writer::writeRowEst(const estimated_state &est_state)
     if(outputFile.is_open())
     {
         outputFile  << est_state.state[0]  << ", " << est_state.state[1] << ", " << est_state.state[2] <<
-        ", " << est_state.state[3] << ", " << est_state.state[4] << ", " << est_state.state[5];
+        ", " << est_state.state[3] << ", " << est_state.state[4] << ", " << est_state.state[5] <<
+        ", " << est_state.state[6] << ", " << est_state.state[7] << ", " << est_state.state[8];
         outputFile << "\n";
     }
 }

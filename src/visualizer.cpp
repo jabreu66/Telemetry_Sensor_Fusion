@@ -1,7 +1,7 @@
 #include "visualizer.h"
 #include <optional>
 
-Visualizer::Visualizer() : window(sf::VideoMode({1000u, 800u}), "Telemetry Sensor Fusion"), scale(5.0f), x_offset(100.0f), y_offset(400.0f)
+Visualizer::Visualizer() : window(sf::VideoMode({1000u, 800u}), "Telemetry Sensor Fusion"), scale(0.5f), x_offset(50.0f), y_offset(700.0f)
 {
 
 }
