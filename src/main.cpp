@@ -18,7 +18,7 @@ double R_gps = 4;
 double R_vel = 1;
 
 double process_noise[STATE_SIZE] = {0.1, 0.5, 0.9, 0.1, 0.5, 0.9, 0.1, 0.5, 0.9};
-double states[STATE_SIZE] = {0, 0, 1000, 50, 0, 5, 0, 0, 0};
+double states[STATE_SIZE] = {0, 50, 0, 0, 0, 0, 1000, 5, 0};
 double variances[STATE_SIZE] = {4, 1, 4, 4, 1, 4, 4, 1, 4};
 
 std::mt19937 accel_gen(42);
