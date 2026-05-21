@@ -22,10 +22,20 @@ void Visualizer::handleEvents()
     }
 }
 
+void Visualizer::clear()
+{
+    window.clear(sf::Color::Black);
+}
+
+void Visualizer::display()
+{
+    window.display();
+}
+
 sf::Vector2f Visualizer::convertToScreen(double x, double y)
 {
     float screen_x = x_offset + static_cast<float>(x) * scale;
-    float screen_y = y_offset + static_cast<float>(y) * scale;
+    float screen_y = y_offset - static_cast<float>(y) * scale;
 
     return sf::Vector2f(screen_x, screen_y);
 }

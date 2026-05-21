@@ -4,6 +4,9 @@
 #include "state.h"
 #include "sensors.hpp"
 #include "est_state.h"
+#include "visualizer.h"
+#include <SFML/System.hpp>
+
 using namespace std;
 
 Writer w("logs.csv");
@@ -35,7 +38,10 @@ int main()
     estimated_state est_state(states, variances);
     int step = 0;
     bool vel_update = false, gps_update = false;
-    for(float i = 0; i < 10; i += dt) // increase time by 0.1 seconds
+
+    Visualizer visualizer;
+
+    for(float i = 0; i < 10 && visualizer.isOpen(); i += dt) // increase time by 0.1 seconds
     {
         
         state.t_s = i;
@@ -109,6 +115,16 @@ int main()
 
         w.writeRow(state);   
         est.writeRowEst(corrected_est_state);
+
+        visualizer.handleEvents();
+        visualizer.clear();
+
+        visualizer.drawPoint(state.x_m, state.z_m, sf::Color::Green, 4.0f);
+        visualizer.drawPoint(corrected_est_state.state[0], corrected_est_state.state[3], sf::Color::Red, 4.0f);
+
+        visualizer.display();
+
+        sf::sleep(sf::milliseconds(100));
 
         step++;
     }

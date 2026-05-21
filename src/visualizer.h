@@ -19,6 +19,8 @@ class Visualizer
 
         bool isOpen();
         void handleEvents();
+        void clear(); 
+        void display();
         void drawPoint(double x, double y, sf::Color color, float radius);
 };
 
