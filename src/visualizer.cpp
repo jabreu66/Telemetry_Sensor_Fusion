@@ -1,7 +1,7 @@
 #include "visualizer.h"
 #include <optional>
 
-Visualizer::Visualizer() : window(sf::VideoMode({1000u, 800u}), "Telemetry Sensor Fusion"), scale(0.5f), x_offset(50.0f), y_offset(700.0f)
+Visualizer::Visualizer() : window(sf::VideoMode({1000u, 800u}), "Telemetry Sensor Fusion"), scale(1.0f), x_offset(50.0f), y_offset(1200.0f)
 {
 
 }
@@ -51,3 +51,4 @@ void Visualizer::drawPoint(double x, double y, sf::Color color, float radius)
 
     window.draw(point);
 }
+

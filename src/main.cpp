@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <vector>
 #include "csv_writer.h"
 #include "state.h"
 #include "sensors.hpp"
@@ -41,6 +42,10 @@ int main()
 
     Visualizer visualizer;
 
+    std::vector<sf::Vector2f> true_positions;
+    std::vector<sf::Vector2f> estimated_positions;
+    std::vector<sf::Vector2f> gps_positions;
+
     for(float i = 0; i < 40 && visualizer.isOpen(); i += dt) // increase time by 0.1 seconds
     {
         
@@ -56,17 +61,21 @@ int main()
         state.x_m +=  state.vx_mps*dt + (0.5*state.a_x)*(dt * dt);
         state.vx_mps = state.vx_mps + state.a_x*dt;
 
-        if(i < 3)
+        if(i < 5)
         {
-            state.a_z = 1.0;
+            state.a_z = 6.0;
         }
-        else if( i >= 3 && i < 7)
+        else if(i >= 5 && i < 12)
         {
-            state.a_z = 0.0;
+            state.a_z = -4.0;
+        }
+        else if(i >= 12 && i < 20)
+        {
+            state.a_z = 3.0;
         }
         else
         {
-            state.a_z = -0.5;
+            state.a_z = -2.0;
         }
 
         state.z_m += state.vz_mps * dt + (0.5 * state.a_z) * (dt * dt);
@@ -88,6 +97,7 @@ int main()
             { 
                 gpsObject = gpsSimulator(state);
                 gw.writeRowGPS(gpsObject);
+                gps_positions.push_back(sf::Vector2f(gpsObject.x, gpsObject.z));
             }
 
         }
@@ -117,9 +127,28 @@ int main()
         est.writeRowEst(corrected_est_state);
 
         visualizer.handleEvents();
+
+        true_positions.push_back(sf::Vector2f(state.x_m, state.z_m));
+        estimated_positions.push_back(sf::Vector2f(corrected_est_state.state[0], corrected_est_state.state[6]));
+
         visualizer.clear();
 
-        visualizer.drawPoint(state.x_m, state.z_m, sf::Color::Green, 4.0f);
+        for(int j = 0; j < true_positions.size(); j++)
+        {
+            visualizer.drawPoint(true_positions[j].x, true_positions[j].y, sf::Color::Green, 2.0f);
+        }
+
+        for(int j = 0; j < estimated_positions.size(); j++)
+        {
+            visualizer.drawPoint(estimated_positions[j].x, estimated_positions[j].y, sf::Color::Red, 2.0f);
+        }
+
+        for(int j = 0; j < gps_positions.size(); j++)
+        {
+            visualizer.drawPoint(gps_positions[j].x, gps_positions[j].y, sf::Color::Blue, 3.0f);
+        }
+
+        visualizer.drawPoint(state.x_m, state.z_m, sf::Color::Green, 5.0f);
         visualizer.drawPoint(corrected_est_state.state[0], corrected_est_state.state[6], sf::Color::Red, 4.0f);
 
         visualizer.display();
